@@ -18,7 +18,7 @@ func (d *DialectSqlite) ColumnDefSql(name string, column *Column) (
 		colBuf.WriteString(" UNSIGNED")
 	}
 	switch column.Type.(type) {
-	case *Bool, *SmallInt, *Integer, *BigInt:
+	case *SmallInt, *Integer, *BigInt:
 		colBuf.WriteString(" INTEGER")
 	case *Decimal, *Float, *Double:
 		colBuf.WriteString(" REAL")
@@ -41,6 +41,9 @@ func (d *DialectSqlite) ColumnOptionSql(column *Column) string {
 	}
 	if column.Unique {
 		options.WriteString(" UNIQUE")
+	}
+	if column.NotNull {
+		options.WriteString(" NOT NULL")
 	}
 	return options.String()
 }

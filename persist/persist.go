@@ -18,9 +18,9 @@ func Register(v *core.Venditio) {
 	v.Map(db)
 	v.Map(NewRegistry())
 	v.Map(&persistInit{})
-	v.Use(func(r *Registry, init *persistInit, db *sql.DB) {
+	v.Use(func(reg *Registry, init *persistInit, db *sql.DB) {
 		if !init.dbChecked {
-			schemaSql, err := SyncRegistrySchemaSql(db, r)
+			schemaSql, err := SyncRegistrySchemaSql(db, reg)
 			if err != nil {
 				panic(err.Error())
 			}

@@ -40,10 +40,10 @@ func SyncRegistrySchemaSql(db *sql.DB, r *Registry) (string, error) {
 		}
 		tSql = append(tSql, s)
 	}
-	return strings.Join(tSql, "\n"), nil
+	return strings.Join(tSql, ""), nil
 }
 
-func RowsToModel(rows *sql.Rows, t *Table) (models []model.Model, err error) {
+func RowsToModels(rows *sql.Rows, t *Table) (models []model.Model, err error) {
 	var cols []string
 	for rows.Next() {
 		if cols == nil {

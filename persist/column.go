@@ -19,15 +19,8 @@ type Column struct {
 	PrimaryKey    bool
 	AutoIncrement bool
 	Unsigned      bool
+	NotNull       bool
 	Type          Typeable
-}
-
-type Bool struct {
-	Typeable
-}
-
-func (t *Bool) RawType() interface{} {
-	return &sql.NullBool{}
 }
 
 type SmallInt struct {
