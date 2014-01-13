@@ -1,7 +1,7 @@
 package persist
 
 import (
-	"strings"
+	"database/sql"
 )
 
 const (
@@ -11,181 +11,85 @@ const (
 )
 
 type Typeable interface {
-	String(driver string) string
+	RawType() interface{}
 }
 
-type BaseType struct {
-	Index         bool
+type Column struct {
 	Unique        bool
 	PrimaryKey    bool
 	AutoIncrement bool
 	Unsigned      bool
+	Type          Typeable
 }
 
-func (t *BaseType) Suffix(driver string) string {
-	parts := []string{}
-	if t.Unsigned {
+type Bool struct {
+	Typeable
+}
 
-	}
-	return strings.Join(parts, " ")
+func (t *Bool) RawType() interface{} {
+	return &sql.NullBool{}
 }
 
 type SmallInt struct {
-	BaseType
 	Typeable
 }
 
-func (t *SmallInt) String(driver string) string {
-	var col string
-	switch driver {
-	case DRIVER_SQLITE:
-		col = "INTEGER(2)"
-	case DRIVER_MYSQL:
-		col = "SMALLINT"
-	case DRIVER_POSTGRES:
-		col = "smallint"
-	default:
-		panic("Unknown driver")
-	}
-	return col + t.Suffix(driver)
+func (t *SmallInt) RawType() interface{} {
+	return &sql.NullInt64{}
 }
 
 type Integer struct {
-	BaseType
 	Typeable
 }
 
-func (t *Integer) String(driver string) string {
-	var col string
-	switch driver {
-	case DRIVER_SQLITE:
-		col = "INTEGER(4)"
-	case DRIVER_MYSQL:
-		col = "INT"
-	case DRIVER_POSTGRES:
-		col = "integer"
-	default:
-		panic("Unknown driver")
-	}
-	return col + t.Suffix(driver)
+func (t *Integer) RawType() interface{} {
+	return &sql.NullInt64{}
 }
 
 type BigInt struct {
-	BaseType
 	Typeable
 }
 
-func (t *BigInt) String(driver string) string {
-	var col string
-	switch driver {
-	case DRIVER_SQLITE:
-		col = "INTEGER(4)"
-	case DRIVER_MYSQL:
-		col = "INT"
-	case DRIVER_POSTGRES:
-		col = "integer"
-	default:
-		panic("Unknown driver")
-	}
-	return col + t.Suffix(driver)
+func (t *BigInt) RawType() interface{} {
+	return &sql.NullInt64{}
 }
 
 type Decimal struct {
-	BaseType
 	Typeable
 }
 
-func (t *Decimal) String(driver string) string {
-	var col string
-	switch driver {
-	case DRIVER_SQLITE:
-		col = "REAL"
-	case DRIVER_MYSQL:
-		col = "DECIMAL"
-	case DRIVER_POSTGRES:
-		col = "decimal"
-	default:
-		panic("Unknown driver")
-	}
-	return col + t.Suffix(driver)
+func (t *Decimal) RawType() interface{} {
+	return &sql.NullFloat64{}
 }
 
 type Float struct {
-	BaseType
 	Typeable
 }
 
-func (t *Float) String(driver string) string {
-	var col string
-	switch driver {
-	case DRIVER_SQLITE:
-		col = "REAL"
-	case DRIVER_MYSQL:
-		col = "FLOAT"
-	case DRIVER_POSTGRES:
-		col = "real"
-	default:
-		panic("Unknown driver")
-	}
-	return col + t.Suffix(driver)
+func (t *Float) RawType() interface{} {
+	return &sql.NullFloat64{}
 }
 
 type Double struct {
-	BaseType
 	Typeable
 }
 
-func (t *Double) String(driver string) string {
-	var col string
-	switch driver {
-	case DRIVER_SQLITE:
-		col = "REAL"
-	case DRIVER_MYSQL:
-		col = "DOUBLE"
-	case DRIVER_POSTGRES:
-		col = "double precision"
-	default:
-		panic("Unknown driver")
-	}
-	return col + t.Suffix(driver)
+func (t *Double) RawType() interface{} {
+	return &sql.NullFloat64{}
 }
 
 type String struct {
-	BaseType
 	Typeable
 }
 
-func (t *String) String(driver string) string {
-	var col string
-	switch driver {
-	case DRIVER_SQLITE:
-		col = "TEXT"
-	case DRIVER_MYSQL:
-		col = "VARCHAR"
-	case DRIVER_POSTGRES:
-		col = "varchar"
-	default:
-		panic("Unknown driver")
-	}
-	return col + t.Suffix(driver)
+func (t *String) RawType() interface{} {
+	return &sql.NullString{}
 }
 
 type Text struct {
-	BaseType
 	Typeable
 }
 
-func (t *Text) String(driver string) string {
-	var col string
-	switch driver {
-	case DRIVER_SQLITE:
-		col = "TEXT"
-	case DRIVER_MYSQL:
-		col = "TEXT"
-	case DRIVER_POSTGRES:
-		col = "text"
-	default:
-		panic("Unknown driver")
-	}
-	return col + t.Suffix(driver)
+func (t *Text) RawType() interface{} {
+	return &sql.NullString{}
 }

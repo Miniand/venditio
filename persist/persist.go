@@ -1,10 +1,9 @@
 package persist
 
 import (
+	"database/sql"
+	"fmt"
 	"github.com/Miniand/venditio/core"
-	_ "github.com/go-sql-driver/mysql"
-	_ "github.com/lib/pq"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 type persistInit struct {
@@ -19,8 +18,19 @@ func Register(v *core.Venditio) {
 	v.Map(db)
 	v.Map(NewRegistry())
 	v.Map(&persistInit{})
-	v.Use(func(r *Registry, init *persistInit) {
+	v.Use(func(r *Registry, init *persistInit, db *sql.DB) {
 		if !init.dbChecked {
+			schemaSql, err := SyncRegistrySchemaSql(db, r)
+			if err != nil {
+				panic(err.Error())
+			}
+			if schemaSql != "" {
+				fmt.Printf("Running following schema update on database:\n%s\n",
+					schemaSql)
+				if _, err := db.Exec(schemaSql); err != nil {
+					panic(err.Error())
+				}
+			}
 			init.dbChecked = true
 		}
 	})
