@@ -3,7 +3,7 @@ package venditio
 import (
 	// "github.com/Miniand/venditio/admin"
 	"github.com/Miniand/venditio/core"
-	// "github.com/Miniand/venditio/page"
+	"github.com/Miniand/venditio/page"
 	"github.com/Miniand/venditio/config"
 	"github.com/Miniand/venditio/persist"
 	"github.com/Miniand/venditio/product"
@@ -19,6 +19,6 @@ func New() *core.Venditio {
 	web.Register(v)
 	persist.Register(v)
 	product.Register(v)
-	// page.Register(v)
+	page.Register(v)
 	return v
 }
