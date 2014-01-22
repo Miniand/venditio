@@ -10,7 +10,7 @@ func TestNew(t *testing.T) {
 
 func TestBindFactory(t *testing.T) {
 	i := New()
-	i.BindFactory("testDep", func() interface{} {
+	i.BindFactory("testDep", func(i Injector) interface{} {
 		return "blah"
 	})
 	d, ok := i.Get("testDep")
@@ -43,7 +43,7 @@ func TestHas(t *testing.T) {
 	if !i.Has("testDepValue") {
 		t.Error("Expected to have testDepValue")
 	}
-	i.BindFactory("testDepFactory", func() interface{} {
+	i.BindFactory("testDepFactory", func(i Injector) interface{} {
 		return "blah"
 	})
 	if !i.Has("testDepFactory") {
@@ -53,7 +53,7 @@ func TestHas(t *testing.T) {
 
 func TestWith(t *testing.T) {
 	i := New()
-	i.BindFactory("testDep", func() interface{} {
+	i.BindFactory("testDep", func(i Injector) interface{} {
 		return "Magooba!"
 	})
 	hasRun := false

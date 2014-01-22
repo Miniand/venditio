@@ -7,8 +7,9 @@ import (
 )
 
 type Injector interface {
-	BindFactory(dep string, factory func() interface{})
+	BindFactory(dep string, factory func(i Injector) interface{})
 	BindValue(dep string, value interface{})
+	MustGet(dep string) interface{}
 	Get(dep string) (interface{}, bool)
 	Has(dep string) bool
 	With(args ...interface{}) ([]reflect.Value, error)
@@ -18,18 +19,18 @@ type Injector interface {
 
 func New() Injector {
 	return &basic{
-		factories: map[string]func() interface{}{},
+		factories: map[string]func(i Injector) interface{}{},
 		deps:      map[string]interface{}{},
 	}
 }
 
 type basic struct {
-	factories map[string]func() interface{}
+	factories map[string]func(i Injector) interface{}
 	deps      map[string]interface{}
 	parent    Injector
 }
 
-func (b *basic) BindFactory(dep string, factory func() interface{}) {
+func (b *basic) BindFactory(dep string, factory func(i Injector) interface{}) {
 	b.factories[dep] = factory
 }
 
@@ -37,10 +38,18 @@ func (b *basic) BindValue(dep string, value interface{}) {
 	b.deps[dep] = value
 }
 
+func (b *basic) MustGet(dep string) interface{} {
+	d, ok := b.Get(dep)
+	if !ok {
+		panic(fmt.Sprintf("Could not find dependency: %s", dep))
+	}
+	return d
+}
+
 func (b *basic) Get(dep string) (interface{}, bool) {
 	var (
 		ok      bool
-		factory func() interface{}
+		factory func(i Injector) interface{}
 	)
 	if _, ok = b.deps[dep]; !ok {
 		if factory, ok = b.factories[dep]; !ok {
@@ -49,7 +58,7 @@ func (b *basic) Get(dep string) (interface{}, bool) {
 			}
 			return nil, false
 		}
-		b.deps[dep] = factory()
+		b.deps[dep] = factory(b)
 	}
 	return b.deps[dep], true
 }

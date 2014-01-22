@@ -27,13 +27,13 @@ func Connect() (*sql.DB, error) {
 	return sql.Open(DatabaseDriver(), DatabaseOptions())
 }
 
-func SyncRegistrySchemaSql(db *sql.DB, r *Registry) (string, error) {
+func SyncSchemaSql(db *sql.DB, s *Schema) (string, error) {
 	dialect, err := DatabaseDialect(DatabaseDriver())
 	if err != nil {
 		return "", err
 	}
 	tSql := []string{}
-	for _, t := range r.Tables {
+	for _, t := range s.Tables {
 		s, err := dialect.SyncTableSchemaSql(db, t)
 		if err != nil {
 			return "", err

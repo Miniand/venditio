@@ -9,20 +9,20 @@ type testRegisterer struct {
 }
 
 func (tr *testRegisterer) Register(v *Venditio) {
-	v.Map(tr)
+	v.BindValue("testRegisterer", tr)
 }
 
 func TestRegister(t *testing.T) {
 	v := New()
 	tr := &testRegisterer{SomeValue: "blah"}
-	if v.Has((*testRegisterer)(nil)) {
+	if v.Has("testRegisterer") {
 		t.Fatal("There is already a testRegisterer available")
 	}
 	tr.Register(v)
-	if !v.Has((*testRegisterer)(nil)) {
+	if !v.Has("testRegisterer") {
 		t.Fatal("testRegisterer did not register")
 	}
-	_, err := v.Invoke(func(tr *testRegisterer) {
+	_, err := v.With("testRegisterer", func(tr *testRegisterer) {
 		if tr.SomeValue != "blah" {
 			t.Fatal("SomeValue wasn't 'blah'")
 		}
