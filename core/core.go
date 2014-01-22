@@ -1,18 +1,13 @@
 package core
 
 import (
-	"github.com/codegangsta/martini"
-	"reflect"
+	"github.com/Miniand/venditio/inject"
 )
 
 type Venditio struct {
-	*martini.ClassicMartini
+	inject.Injector
 }
 
 func New() *Venditio {
-	return &Venditio{martini.Classic()}
-}
-
-func (v *Venditio) Has(i interface{}) bool {
-	return v.Injector.Get(reflect.TypeOf(i)).IsValid()
+	return &Venditio{inject.New()}
 }

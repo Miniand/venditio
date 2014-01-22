@@ -1,20 +1,20 @@
 package venditio
 
 import (
-	"github.com/Miniand/venditio/admin"
+	// "github.com/Miniand/venditio/admin"
 	"github.com/Miniand/venditio/core"
-	"github.com/Miniand/venditio/page"
-	"github.com/Miniand/venditio/persist"
-	"github.com/Miniand/venditio/product"
-	"github.com/Miniand/venditio/view"
+	// "github.com/Miniand/venditio/page"
+	// "github.com/Miniand/venditio/persist"
+	// "github.com/Miniand/venditio/product"
+	// "github.com/Miniand/venditio/view"
 )
 
 func New() *core.Venditio {
 	v := core.New()
-	view.Register(v)
-	admin.Register(v)
-	persist.Register(v)
-	product.Register(v)
-	page.Register(v)
+	// view.Register(v)
+	// admin.Register(v)
+	// persist.Register(v)
+	// product.Register(v)
+	// page.Register(v)
 	return v
 }
