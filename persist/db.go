@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"github.com/Miniand/venditio/model"
 	"os"
-	"strings"
 )
 
 func DatabaseDriver() string {
@@ -27,20 +26,20 @@ func Connect() (*sql.DB, error) {
 	return sql.Open(DatabaseDriver(), DatabaseOptions())
 }
 
-func SyncSchemaSql(db *sql.DB, s *Schema) (string, error) {
+func SyncSchemaSql(db *sql.DB, s *Schema) ([]string, error) {
 	dialect, err := DatabaseDialect(DatabaseDriver())
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 	tSql := []string{}
 	for _, t := range s.Tables {
 		s, err := dialect.SyncTableSchemaSql(db, t)
 		if err != nil {
-			return "", err
+			return nil, err
 		}
-		tSql = append(tSql, s)
+		tSql = append(tSql, s...)
 	}
-	return strings.Join(tSql, ""), nil
+	return tSql, nil
 }
 
 func RowsToModels(rows *sql.Rows, t *Table) (models []model.Model, err error) {

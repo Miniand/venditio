@@ -9,7 +9,7 @@ import (
 )
 
 type Dialect interface {
-	SyncTableSchemaSql(db *sql.DB, t *Table) (string, error)
+	SyncTableSchemaSql(db *sql.DB, t *Table) ([]string, error)
 }
 
 func DatabaseDialect(driver string) (Dialect, error) {

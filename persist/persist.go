@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/Miniand/venditio/core"
 	"github.com/Miniand/venditio/inject"
+	"strings"
 )
 
 const (
@@ -31,11 +32,13 @@ func Register(v *core.Venditio) {
 		if err != nil {
 			panic(err.Error())
 		}
-		if schemaSql != "" {
+		if len(schemaSql) > 0 {
 			fmt.Printf("Running following schema update on database:\n%s\n",
-				schemaSql)
-			if _, err := db.Exec(schemaSql); err != nil {
-				panic(err.Error())
+				strings.Join(schemaSql, "\n"))
+			for _, sSql := range schemaSql {
+				if _, err := db.Exec(sSql); err != nil {
+					panic(err.Error())
+				}
 			}
 		}
 		return db
