@@ -2,10 +2,10 @@ package main
 
 import (
 	"github.com/Miniand/venditio"
-	"github.com/Miniand/venditio/web"
+	"github.com/Miniand/venditio/cmd"
 )
 
 func main() {
 	v := venditio.New()
-	web.Run(v)
+	cmd.Run(v.MustGet(cmd.DEP_COMMANDER).(cmd.Commander))
 }
