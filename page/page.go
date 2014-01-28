@@ -12,7 +12,12 @@ import (
 )
 
 func Register(v *core.Venditio) {
-	// Schema
+	registerSchema(v)
+	registerAssets(v)
+	registerRoutes(v)
+}
+
+func registerSchema(v *core.Venditio) {
 	schema := v.MustGet(persist.DEP_SCHEMA).(*persist.Schema)
 	t := schema.Table("pages")
 
@@ -29,10 +34,15 @@ func Register(v *core.Venditio) {
 		NotNull: true,
 	})
 	t.AddIndex([]string{"title"})
-	// Assets
+}
+
+func registerAssets(v *core.Venditio) {
 	v.MustGet(asset.DEP_ASSET).(asset.Resolver).AddPackagePath(
 		"github.com/Miniand/venditio/page/assets")
-	// Web
+}
+
+func registerRoutes(v *core.Venditio) {
+	schema := v.MustGet(persist.DEP_SCHEMA).(*persist.Schema)
 	router := v.MustGet(web.DEP_ROUTER).(*mux.Router)
 	router.HandleFunc("/pages/{url}", func(w http.ResponseWriter,
 		r *http.Request) {

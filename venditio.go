@@ -11,14 +11,12 @@ import (
 	"github.com/Miniand/venditio/product"
 	"github.com/Miniand/venditio/template"
 	"github.com/Miniand/venditio/web"
-	// "github.com/Miniand/venditio/view"
 )
 
 func New() *core.Venditio {
 	v := core.New()
 	config.Register(v)
 	cmd.Register(v)
-	// view.Register(v)
 	// admin.Register(v)
 	web.Register(v)
 	asset.Register(v)
