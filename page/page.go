@@ -2,11 +2,12 @@ package page
 
 import (
 	"database/sql"
+	"github.com/Miniand/venditio/asset"
 	"github.com/Miniand/venditio/core"
 	"github.com/Miniand/venditio/persist"
+	"github.com/Miniand/venditio/template"
 	"github.com/Miniand/venditio/web"
 	"github.com/gorilla/mux"
-	"io"
 	"net/http"
 )
 
@@ -28,11 +29,15 @@ func Register(v *core.Venditio) {
 		NotNull: true,
 	})
 	t.AddIndex([]string{"title"})
+	// Assets
+	v.MustGet(asset.DEP_ASSET).(asset.Resolver).AddPackagePath(
+		"github.com/Miniand/venditio/page/assets")
 	// Web
 	router := v.MustGet(web.DEP_ROUTER).(*mux.Router)
 	router.HandleFunc("/pages/{url}", func(w http.ResponseWriter,
 		r *http.Request) {
 		db := v.MustGet(persist.DEP_DB).(*sql.DB)
+		tmpl := v.MustGet(template.DEP_TEMPLATE).(template.Templater)
 		vars := mux.Vars(r)
 		rows, err := db.Query("SELECT * FROM pages WHERE url=?",
 			vars["url"])
@@ -46,6 +51,12 @@ func Register(v *core.Venditio) {
 		if len(models) == 0 {
 			return
 		}
-		io.WriteString(w, models[0]["body"].(string))
+		err = tmpl.Render(w, "page.tmpl", map[string]interface{}{
+			"title": models[0]["title"],
+			"body":  models[0]["body"],
+		})
+		if err != nil {
+			panic(err.Error())
+		}
 	})
 }
