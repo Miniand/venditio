@@ -1,7 +1,7 @@
 package venditio
 
 import (
-	// "github.com/Miniand/venditio/admin"
+	"github.com/Miniand/venditio/admin"
 	"github.com/Miniand/venditio/asset"
 	"github.com/Miniand/venditio/cmd"
 	"github.com/Miniand/venditio/config"
@@ -17,7 +17,7 @@ func New() *core.Venditio {
 	v := core.New()
 	config.Register(v)
 	cmd.Register(v)
-	// admin.Register(v)
+	admin.Register(v)
 	web.Register(v)
 	asset.Register(v)
 	template.Register(v)

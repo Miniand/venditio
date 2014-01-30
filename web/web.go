@@ -15,22 +15,12 @@ import (
 const (
 	DEP_ROUTER          = "httpRouter"
 	CONFIG_BIND_ADDRESS = "BIND_ADDRESS"
+	PUBLIC_DIR          = "public"
 )
 
 func Register(v *core.Venditio) {
 	v.BindFactory(DEP_ROUTER, func(i inject.Injector) interface{} {
-		r := mux.NewRouter()
-		a := i.MustGet(asset.DEP_ASSET).(asset.Resolver)
-		r.HandleFunc("/{path:.*}", func(w http.ResponseWriter, r *http.Request) {
-			vars := mux.Vars(r)
-			resolved := a.Resolve(path.Join("public", vars["path"]))
-			if len(resolved) == 0 {
-				http.NotFound(w, r)
-			} else {
-				http.ServeFile(w, r, resolved[0])
-			}
-		})
-		return r
+		return mux.NewRouter()
 	})
 	// Config
 	c := v.MustGet(config.DEP_CONFIG).(*config.Config)
@@ -43,7 +33,18 @@ func Register(v *core.Venditio) {
 }
 
 func Run(v *core.Venditio) error {
-	http.Handle("/", v.MustGet(DEP_ROUTER).(*mux.Router))
+	r := v.MustGet(DEP_ROUTER).(*mux.Router)
+	a := v.MustGet(asset.DEP_ASSET).(asset.Resolver)
+	r.HandleFunc("/{path:.*}", func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		resolved := a.Resolve(path.Join(PUBLIC_DIR, vars["path"]))
+		if len(resolved) == 0 {
+			http.NotFound(w, r)
+		} else {
+			http.ServeFile(w, r, resolved[0])
+		}
+	})
+	http.Handle("/", r)
 	addr := v.MustGet(config.DEP_CONFIG).(*config.Config).Get(
 		CONFIG_BIND_ADDRESS)
 	log.Printf("Listening on %s\n", addr)
