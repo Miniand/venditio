@@ -1,6 +1,7 @@
 package web
 
 import (
+	"github.com/Miniand/venditio/asset"
 	"github.com/Miniand/venditio/cmd"
 	"github.com/Miniand/venditio/config"
 	"github.com/Miniand/venditio/core"
@@ -8,6 +9,7 @@ import (
 	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+	"path"
 )
 
 const (
@@ -17,7 +19,18 @@ const (
 
 func Register(v *core.Venditio) {
 	v.BindFactory(DEP_ROUTER, func(i inject.Injector) interface{} {
-		return mux.NewRouter()
+		r := mux.NewRouter()
+		a := i.MustGet(asset.DEP_ASSET).(asset.Resolver)
+		r.HandleFunc("/{path:.*}", func(w http.ResponseWriter, r *http.Request) {
+			vars := mux.Vars(r)
+			resolved := a.Resolve(path.Join("public", vars["path"]))
+			if len(resolved) == 0 {
+				http.NotFound(w, r)
+			} else {
+				http.ServeFile(w, r, resolved[0])
+			}
+		})
+		return r
 	})
 	// Config
 	c := v.MustGet(config.DEP_CONFIG).(*config.Config)
